@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Tâches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --marron-fonce: #5D4037;
+            --marron-moyen: #8D6E63;
+            --marron-clair: #BCAAA4;
+            --beige: #D7CCC8;
+            --creme: #EFEBE9;
+            --texte-fonce: #3E2723;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--creme);
+            color: var(--texte-fonce);
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--marron-fonce);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            padding: 15px 25px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu li:hover,
+        .nav-menu li.active {
+            background-color: var(--marron-moyen);
+            cursor: pointer;
+        }
+
+        .nav-menu i {
+            margin-right: 10px;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .recent-activity {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: var(--beige);
+        }
+
+        table tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar" th:if="${#authorization.expression('hasRole(''ROLE_ANNOTATEUR_ROLE'')')}">
+    <div class="logo">
+        <h2>Dashboard</h2>
+    </div>
+    <ul class="nav-menu">
+        <li><a th:href="@{/user/dashboard}" style="color: white;"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+        <li class="active"><a th:href="@{/user/tasks}" style="color: white;"><i class="fas fa-tasks"></i> Mes Tâches</a></li>
+        <li><i class="fas fa-user"></i> Profil</li>
+        <li><i class="fas fa-sign-out-alt"></i>
+            <a th:href="@{/logout}">Déconnexion</a>
+        </li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <div class="header">
+        <h1>Mes Tâches</h1>
+    </div>
+
+    <div class="recent-activity">
+        <h2>Liste des Tâches Assignées</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Dataset</th>
+                <th>Nombre de Couples</th>
+                <th>Date Limite</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tache : ${taches}">
+                <td th:text="${tache.dataset.datasetName}"></td>
+                <td th:text="${#lists.size(tache.coupleTexte)}"></td>
+                <td th:text="${tache.dataLimite}"></td>
+                <td>
+                    <a th:href="@{/user/travailler/{tacheId}(tacheId=${tache.id})}" class="edit-btn">Travailler</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

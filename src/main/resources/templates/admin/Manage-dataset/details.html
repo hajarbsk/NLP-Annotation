@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Dataset</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --marron-fonce: #5D4037;
+            --marron-moyen: #8D6E63;
+            --marron-clair: #BCAAA4;
+            --beige: #D7CCC8;
+            --creme: #EFEBE9;
+            --texte-fonce: #3E2723;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--creme);
+            color: var(--texte-fonce);
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--marron-fonce);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            padding: 15px 25px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu li:hover,
+        .nav-menu li.active {
+            background-color: var(--marron-moyen);
+            cursor: pointer;
+        }
+
+        .nav-menu i {
+            margin-right: 10px;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-area img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 20px;
+        }
+
+        .dataset-info, .recent-activity {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: var(--beige);
+        }
+
+        table tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+
+        .texte-tronque {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .details-btn {
+            background-color: var(--marron-moyen);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .details-btn:hover {
+            background-color: var(--marron-fonce);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN_ROLE'')')}">
+    <div class="logo">
+        <h2>Dashboard</h2>
+    </div>
+    <ul class="nav-menu">
+        <li><a th:href="@{/admin/dashboard}" style="color: white;"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+        <li><i class="fas fa-tasks"></i> Gestion des tâches</li>
+        <li><a th:href="@{/admin/Manage-dataset/manage-dataset}" style="color: white;"><i class="fas fa-play"></i> Gestion des datasets</a></li>
+        <li><a th:href="@{/admin/Manage-user/manage-user}" style="color: white;"><i class="fas fa-users"></i> Gestion des utilisateurs</a></li>
+        <li><i class="fas fa-cog"></i> Paramètres</li>
+        <li><i class="fas fa-user"></i> Profil</li>
+        <li><i class="fas fa-sign-out-alt"></i>
+            <a th:href="@{/logout}">Déconnexion</a>
+        </li>
+    </ul>
+</div>
+
+<!-- Main content -->
+<div class="main-content">
+    <div class="header">
+        <h1>Détails du Dataset</h1>
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Rechercher...">
+        </div>
+        <div class="user-area">
+            <i class="fas fa-bell"></i>
+            <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="User">
+        </div>
+    </div>
+
+    <div class="dataset-info" th:if="${dataset != null}">
+        <h3>Informations sur le Dataset</h3>
+        <p><strong>Nom :</strong> <span th:text="${dataset.datasetName}"></span></p>
+        <p><strong>Description :</strong> <span th:text="${dataset.datasetDescription}"></span></p>
+        <p><strong>Taille :</strong> <span th:text="${#lists.size(dataset.coupleTextes)} + ' couples'"></span></p>
+        <p><strong>% Avancement :</strong> <span th:text="${dataset.progress != null ? dataset.progress + '%' : '0%'}"></span></p>
+        <p><strong>Classes :</strong> <span th:each="classe : ${dataset.classePossibles}" th:text="${classe.texteClasse} + ' '"></span></p>
+    </div>
+
+    <div class="recent-activity couples-table" th:if="${dataset != null}">
+        <h2>Liste des Couples</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Texte 1</th>
+                <th>Texte 2</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="couple : ${dataset.coupleTextes}">
+                <td th:text="${couple.id}"></td>
+                <td class="texte-tronque" th:text="${couple.texte1}"></td>
+                <td class="texte-tronque" th:text="${couple.texte2}"></td>
+                <td>
+                    <a href="#" class="details-btn" th:onclick="'openModal(' + ${couple.id} + ')'">Détails</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="recent-activity annotators-table" th:if="${dataset != null and ${#lists.size(dataset.taches) > 0}}">
+        <h2>Annotateurs Affectés</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom/Prénom</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tache : ${dataset.taches}">
+                <td th:text="${tache.annotateur.id}"></td>
+                <td th:text="${tache.annotateur.firstName} + ' ' + ${tache.annotateur.lastName}"></td>
+                <td>
+                    <a th:href="@{/admin/Manage-dataset/remove-annotator/{datasetId}/{annotatorId}(datasetId=${dataset.id}, annotatorId=${tache.annotateur.id})}"
+                       class="delete-btn">Supprimer</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modale pour les détails des couples -->
+    <div th:each="couple : ${dataset.coupleTextes}">
+        <div class="modal" th:id="'modal-' + ${couple.id}">
+            <div class="modal-content">
+                <span class="close" th:onclick="'closeModal(' + ${couple.id} + ')'">×</span>
+                <h3>Détails du Couple</h3>
+                <p><strong>ID :</strong> <span th:text="${couple.id}"></span></p>
+                <p><strong>Texte 1 :</strong> <span th:text="${couple.texte1}"></span></p>
+                <p><strong>Texte 2 :</strong> <span th:text="${couple.texte2}"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(coupleId) {
+        var modal = document.getElementById('modal-' + coupleId);
+        modal.style.display = "block";
+    }
+
+    function closeModal(coupleId) {
+        var modal = document.getElementById('modal-' + coupleId);
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        var modals = document.getElementsByClassName('modal');
+        for (var i = 0; i < modals.length; i++) {
+            if (event.target == modals[i]) {
+                modals[i].style.display = "none";
+            }
+        }
+    }
+</script>
+</body>
+</html>

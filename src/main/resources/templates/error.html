@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Erreur - NLP Annotation</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    body {
+      background: linear-gradient(to right, #8B4513, #A0522D);
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .error-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+    .error-box h2 {
+      color: #8B4513;
+    }
+    .error-box p {
+      color: red;
+    }
+    .error-box a {
+      color: #8B4513;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<div class="error-box">
+  <h2>Erreur</h2>
+  <p th:text="${errorMessage}"></p>
+  <a href="/login">Retour à la connexion</a>
+</div>
+</body>
+</html>

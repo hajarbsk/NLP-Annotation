@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affecter Annotateurs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --marron-fonce: #5D4037;
+            --marron-moyen: #8D6E63;
+            --marron-clair: #BCAAA4;
+            --beige: #D7CCC8;
+            --creme: #EFEBE9;
+            --texte-fonce: #3E2723;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--creme);
+            color: var(--texte-fonce);
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--marron-fonce);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            padding: 15px 25px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu li:hover,
+        .nav-menu li.active {
+            background-color: var(--marron-moyen);
+            cursor: pointer;
+        }
+
+        .nav-menu i {
+            margin-right: 10px;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-area img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 20px;
+        }
+
+        .recent-activity {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: var(--beige);
+        }
+
+        table tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+
+        .validate-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .validate-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN_ROLE'')')}">
+    <div class="logo">
+        <h2>Dashboard</h2>
+    </div>
+    <ul class="nav-menu">
+        <li><a th:href="@{/admin/dashboard}" style="color: white;"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+        <li><i class="fas fa-tasks"></i> Gestion des tâches</li>
+        <li class="active"><a th:href="@{/admin/Manage-dataset/manage-dataset}" style="color: white;"><i class="fas fa-play"></i> Gestion des datasets</a></li>
+        <li><a th:href="@{/admin/Manage-user/manage-user}" style="color: white;"><i class="fas fa-users"></i> Gestion des utilisateurs</a></li>
+        <li><i class="fas fa-cog"></i> Paramètres</li>
+        <li><i class="fas fa-user"></i> Profil</li>
+        <li>
+            <i class="fas fa-sign-out-alt"></i>
+            <a th:href="@{/logout}">Déconnexion</a>
+        </li>
+    </ul>
+</div>
+
+<!-- Main content -->
+<div class="main-content">
+    <div class="header">
+        <h1>Ajout ou Affectation d'Annotateurs</h1>
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Rechercher...">
+        </div>
+        <div class="user-area">
+            <i class="fas fa-bell"></i>
+            <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="User">
+        </div>
+    </div>
+
+    <div class="recent-activity" th:if="${dataset != null}">
+        <h2>Affecter des Annotateurs au Dataset : <span th:text="${dataset.datasetName}"></span></h2>
+        <form method="post" th:action="@{/admin/Manage-dataset/affecter-annotateur/{id}(id=${dataset.id})}" onsubmit="return validateForm()">
+            <div class="form-group">
+                <label for="deadline">Date limite :</label>
+                <input type="datetime-local" id="deadline" name="deadline" required>
+                <div id="deadline-error" class="error-message"></div>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Annotateurs</th>
+                    <th>Sélection</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="annotator : ${annotators}"
+                    th:unless="${dataset.taches != null and dataset.taches.stream().anyMatch(tache -> tache.annotateur.id == annotator.id)}">
+                    <td th:text="${annotator.firstName} + ' ' + ${annotator.lastName}"></td>
+                    <td><input type="checkbox" th:name="'annotatorIds'" th:value="${annotator.id}" onchange="toggleSubmitButton()"/></td>
+                </tr>
+                <tr th:if="${annotators.empty() or ${dataset.taches != null and dataset.taches.size() == annotators.size()}}">
+                    <td colspan="2">Aucun annotateur disponible pour ce dataset.</td>
+                </tr>
+                </tbody>
+            </table>
+            <button type="submit" id="submit-btn" class="validate-btn" disabled>Valider</button>
+        </form>
+        <p th:if="${error}" th:text="'Erreur : ' + ${error}" class="error-message"></p>
+    </div>
+
+    <div class="recent-activity annotators-table" th:if="${dataset != null and ${#lists.size(dataset.taches) > 0}}">
+        <h2>Annotateurs Affectés</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom/Prénom</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tache : ${dataset.taches}">
+                <td th:text="${tache.annotateur.id}"></td>
+                <td th:text="${tache.annotateur.firstName} + ' ' + ${tache.annotateur.lastName}"></td>
+                <td>
+                    <a th:href="@{/admin/Manage-dataset/remove-annotator/{datasetId}/{annotatorId}(datasetId=${dataset.id}, annotatorId=${tache.annotateur.id})}"
+                       class="delete-btn">Supprimer</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function validateForm() {
+        const deadlineInput = document.getElementById('deadline').value;
+        const deadline = new Date(deadlineInput);
+        const now = new Date();
+        const errorDiv = document.getElementById('deadline-error');
+
+        if (deadline <= now) {
+            errorDiv.textContent = "La date limite doit être dans le futur.";
+            return false;
+        }
+        errorDiv.textContent = "";
+        return true;
+    }
+
+    function toggleSubmitButton() {
+        const checkboxes = document.querySelectorAll('input[name="annotatorIds"]:checked');
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = checkboxes.length === 0;
+    }
+
+    // Initial check on page load
+    document.addEventListener('DOMContentLoaded', toggleSubmitButton);
+</script>
+</body>
+</html>

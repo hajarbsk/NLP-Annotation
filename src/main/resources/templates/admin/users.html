@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des utilisateurs - NLP Annotation</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #8B4513;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN_ROLE'')')}">
+<h2>Gestion des utilisateurs</h2>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>Nom</th>
+        <th>Activé</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="user : ${users}">
+        <td th:text="${user}"></td>
+        <td th:text="${user.firstName + ' ' + user.lastName}"></td>
+        <td th:text="${user.enabled ? 'Oui' : 'Non'}"></td>
+        <td>
+            <form th:action="@{/admin/toggle-user-enabled/{id}(id=${user.id})}" method="post">
+                <button type="submit" th:text="${user.enabled ? 'Désactiver' : 'Activer'}"></button>
+            </form>
+        </td>
+    </tr>
+</table>
+<a href="/admin/dashboard">Retour au tableau de bord</a>
+</div>
+</body>
+</html>

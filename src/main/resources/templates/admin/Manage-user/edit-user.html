@@ -1,0 +1,204 @@
+<!--/templates/admin/Manage-user/edit-user.html-->
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <style>
+        :root {
+            --marron-fonce: #5D4037;
+            --marron-moyen: #8D6E63;
+            --marron-clair: #BCAAA4;
+            --beige: #D7CCC8;
+            --creme: #EFEBE9;
+            --texte-fonce: #3E2723;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: var(--creme);
+            color: var(--texte-fonce);
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--marron-fonce);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            padding: 15px 25px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu li:hover,
+        .nav-menu li.active {
+            background-color: var(--marron-moyen);
+            cursor: pointer;
+        }
+
+        .nav-menu i {
+            margin-right: 10px;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+            font-size: 1rem;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-area i {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .user-area img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .recent-activity, .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        form input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid var(--marron-clair);
+        }
+
+        form button {
+            background-color: var(--marron-fonce);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        form button:hover {
+            background-color: var(--marron-moyen);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN_ROLE'')')}">    <div class="logo">
+        Dashboard
+    </div>
+    <ul class="nav-menu">
+        <li ><a th:href="@{/admin/dashboard}" style="color: white;"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+        <li><a href="#"><i class="fas fa-tasks"></i> Gestion des tâches</a></li>
+        <li><a href="#"><i class="fas fa-play"></i> Gestion des datasets</a></li>
+        <li class="active"><a th:href="@{/admin/Manage-user/manage-user}"><i class="fas fa-users"></i> Gestion des
+            utilisateurs</a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> Paramètres</a></li>
+        <li><a href="#"><i class="fas fa-user"></i> Profil</a></li>
+        <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+    </ul>
+</div>
+
+<!-- Main content -->
+<div class="main-content">
+    <div class="header">
+        <h1>Tableau de bord Principal</h1>
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Rechercher..." aria-label="Rechercher"/>
+        </div>
+        <div class="user-area" aria-label="Zone utilisateur">
+            <i class="fas fa-bell" title="Notifications"></i>
+            <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="Photo utilisateur"/>
+        </div>
+    </div>
+
+    <div class="recent-activity">
+        <h2>Modifier un utilisateur</h2>
+        <form th:action="@{/admin/Manage-user/edit-user/{id}(id=${user.id})}" th:object="${user}" method="post">
+            <input type="text" th:field="*{firstName}" placeholder="Prénom" required aria-label="Prénom"/>
+            <input type="text" th:field="*{lastName}" placeholder="Nom" required aria-label="Nom"/>
+            <input type="email" th:field="*{email}" placeholder="Email" required aria-label="Nom"/>
+            <input type="password" th:field="*{password}" placeholder="Mot de passe" required aria-label="Mot de passe" />
+            <button type="submit">Sauvegarder</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>
